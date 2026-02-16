@@ -1,0 +1,158 @@
+<p-confirmDialog></p-confirmDialog>
+
+<div class="table-container shadow-4">
+
+  <div class="flex justify-content-between align-items-center p-4 border-bottom-1 surface-border">
+    <h2 class="m-0 text-900">{{ 'NOTES.PAGE_TITLE' | translate }}</h2>
+    
+    <button pButton 
+            (click)="openNew()"
+            [label]="'NOTES.NEW_BTN' | translate" 
+            icon="pi pi-plus" 
+            class="p-button-rounded p-button-success">
+    </button>
+  </div>
+
+  <p-table
+    [value]="notes"
+    [loading]="loading"
+    [paginator]="notes.length > 0"
+    [rows]="5"
+    responsiveLayout="scroll"
+    [scrollable]="true"
+    scrollHeight="400px">
+    
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="min-width: 100px">{{ 'NOTES.TABLE.FILE' | translate }}</th>
+        <th pSortableColumn="title" style="min-width: 150px">
+          {{ 'NOTES.TABLE.TITLE' | translate }} <p-sortIcon field="title"></p-sortIcon>
+        </th>
+        <th style="min-width: 250px">{{ 'NOTES.TABLE.CONTENT' | translate }}</th>
+        <th style="min-width: 120px">{{ 'NOTES.TABLE.DATE' | translate }}</th>
+        <th style="min-width: 160px">{{ 'NOTES.TABLE.ACTIONS' | translate }}</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-note>
+      <tr>
+        <td>
+           <img *ngIf="isImage(note.imageUrl)" [src]="note.imageUrl" width="50" class="border-round shadow-1" style="object-fit: cover; aspect-ratio: 1/1;" />
+           
+           <i *ngIf="isPdf(note.imageUrl)" class="pi pi-file-pdf text-3xl text-red-500"></i>
+           <i *ngIf="isOtherFile(note.imageUrl)" class="pi pi-file text-3xl text-blue-500" pTooltip="ملف مرفق" tooltipPosition="top"></i>
+        </td>
+
+        <td>{{ note.title }}</td>
+        <td class="text-overflow-ellipsis">{{ note.content }}</td>
+        <td>{{ note.createdAt | date:'shortDate' }}</td>
+
+        <td>
+           <button pButton icon="pi pi-eye" 
+                   class="p-button-rounded p-button-text p-button-secondary" 
+                   (click)="viewNote(note)">
+           </button>
+
+           <button pButton icon="pi pi-file-edit" 
+                   class="p-button-rounded p-button-text p-button-info" 
+                   (click)="openEdit(note)">
+           </button>
+
+           <button pButton icon="pi pi-trash" 
+                   class="p-button-rounded p-button-text p-button-danger" 
+                   (click)="deleteNote(note.id)">
+           </button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-6">
+          <div class="flex flex-column align-items-center gap-3">
+            <i class="pi pi-folder-open text-500" style="font-size: 4rem"></i>
+            <span class="text-xl font-bold text-700">{{ 'NOTES.EMPTY.TITLE' | translate }}</span>
+            <span class="text-600">{{ 'NOTES.EMPTY.SUBTITLE' | translate }}</span>
+            <button pButton (click)="openNew()"
+                    [label]="'NOTES.EMPTY.BTN' | translate" 
+                    icon="pi pi-plus" 
+                    class="p-button-primary mt-2">
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
+
+<p-dialog 
+  [(visible)]="displayFormDialog" 
+  [style]="{width: '800px'}" 
+  [header]="currentRecord.id ? ('NOTES.FORM.HEADER_EDIT' | translate) : ('NOTES.FORM.HEADER_NEW' | translate)" 
+  [modal]="true" 
+  styleClass="p-fluid">
+
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="title">{{ 'NOTES.FORM.TITLE_LBL' | translate }}</label>
+      <input type="text" pInputText id="title" [(ngModel)]="currentRecord.title" required autofocus />
+      </div>
+
+    <div class="field mt-3">
+      <label for="content">{{ 'NOTES.FORM.CONTENT_LBL' | translate }}</label>
+      <textarea id="content" pInputTextarea [(ngModel)]="currentRecord.content" required rows="3" cols="20"></textarea>
+    </div>
+
+    <div class="field mt-3">
+      <label for="fileUpload">{{ 'NOTES.FORM.FILE_LBL' | translate }}</label>
+      <input type="file" id="fileUpload" (change)="onFileSelect($event)" class="w-full p-2 border-1 surface-border border-round">
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton [label]="'NOTES.FORM.CANCEL' | translate" icon="pi pi-times" class="p-button-text" (click)="displayFormDialog = false"></button>
+    <button pButton [label]="'NOTES.FORM.SAVE' | translate" icon="pi pi-check" class="p-button-text" (click)="saveRecord()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog
+  [(visible)]="displayViewDialog"
+  [modal]="true"
+  [style]="{width: '600px'}"
+  [header]="selectedNoteView?.title"
+  [dismissableMask]="true">
+
+  <div *ngIf="selectedNoteView" class="flex flex-column gap-3">
+    
+    <div *ngIf="selectedNoteView.imageUrl" class="text-center bg-gray-100 p-3 border-round">
+      
+      <img *ngIf="isImage(selectedNoteView.imageUrl)" 
+           [src]="selectedNoteView.imageUrl" 
+           style="max-width: 100%; max-height: 400px; object-fit: contain;">
+
+
+      <div *ngIf="isPdf(selectedNoteView.imageUrl)">
+        <i class="pi pi-file-pdf text-6xl text-red-500 mb-2"></i><br>
+    
+      </div>
+        <div *ngIf="isOtherFile(selectedNoteView.imageUrl)">
+            <i class="pi pi-file text-6xl text-blue-500 mb-2"></i><br>
+            
+            </div>
+
+            <div>
+        <a [href]="selectedNoteView.imageUrl" target="_blank" pButton [label]="'NOTES.DIALOG.DOWNLOAD' | translate" class="p-button-outlined"></a>
+            </div>
+
+    </div>
+
+    
+    <p class="line-height-3 text-lg">{{ selectedNoteView.content }}</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton [label]="'NOTES.DIALOG.CLOSE' | translate" (click)="displayViewDialog = false" class="p-button-text"></button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,70 @@
+name: Manual Frontend Build & Push
+
+# ------------------------------------------------------------------
+# TRIGGERS (Manual Workflow)
+# ------------------------------------------------------------------
+on:
+  # Triggered manually via GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version Tag (e.g., v1.0.0 or latest)'
+        required: false
+        default: 'latest'
+
+# ------------------------------------------------------------------
+# ENVIRONMENT VARIABLES
+# ------------------------------------------------------------------
+env:
+  # Full Docker Image Name: username/repository
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/secure-docs-frontend
+
+# ------------------------------------------------------------------
+# JOBS
+# ------------------------------------------------------------------
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js environment (for Angular 19)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Caches node_modules to speed up future runs
+
+      # 3. Clean Install of Dependencies
+      # 'npm ci' is faster and more reliable than 'npm install' for CI environments
+      # It ensures exact versions from package-lock.json are used
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      # 4. Build Angular Application (Production Mode)
+      # Compiles TypeScript, optimizes bundles, and outputs to /dist folder
+      - name: Build Angular App
+        run: npm run build --prod
+
+      # 5. Authenticate with Docker Hub using Repository Secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 6. Build and Push Docker Image
+      # Uses the Dockerfile in the root context
+      # Note: Ensure your Dockerfile copies artifacts from the 'dist' folder generated above
+      # or performs a multi-stage build internally.
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}

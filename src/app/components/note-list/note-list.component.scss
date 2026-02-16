@@ -1,0 +1,58 @@
+// 🔴 الكلاس الحاوي للجدول
+.table-container {
+  // 1. التحكم في الحجم (العرض)
+  // غير الرقم 80% إلى أي رقم تريده (مثلاً 1000px أو 90%)
+  width: 100%; 
+  
+  max-width: 1300px; // أقصى عرض ممكن
+  margin: rem auto; // لتوسط الجدول في الصفحة (يمين ويسار تلقائي)
+
+  border-radius: 20px;
+  
+  overflow: hidden; 
+  
+  // خلفية بيضاء للحاوية
+
+    // ... الخصائص السابقة (width, radius, etc) ...
+
+  // 1. لون الخلفية المتكيف (Surface)
+  // var(--surface-card):
+  // - في Light Mode: يعطيك أبيض نقي (أو رمادي خفيف جداً حسب الثيم)
+  // - في Dark Mode: يعطيك رمادي غامق أنيق جداً (ليس أسود كالح)
+// يجعل الخلفية بارزة قليلاً عن خلفية الصفحة الرئيسية
+// جرب هذه القيم بالترتيب وشوف اللي يعجبك:
+
+// 1. أفتح درجة (غالباً أبيض ناصع في اللايت)
+background-color: var(--surface-0); 
+
+// 2. رمادي خفيف جداً (يعطي إحساس بالعمق)
+background-color: var(--surface-50); 
+
+// 3. أغمق قليلاً (جيد للفصل بين الأقسام)
+background-color: var(--surface-100); 
+
+// 4. أغمق درجة (يستخدم عادة للهيدر أو الفوتر)
+background-color: var(--surface-200);
+
+
+
+
+  // 3. حدود خفيفة (Border)
+  // تعطي إطاراً جميلاً يبرز الجدول عن خلفية الصفحة
+  border: 1px solid var(--surface-border);
+
+}
+
+// تنسيق إضافي لصور الجدول لتكون جميلة
+img.border-round {
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+// تنسيق للنصوص الطويلة داخل الجدول لكي لا تخرب الشكل
+.text-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 20ch; // اعرض 20 حرف فقط ثم ضع (...)
+}

@@ -1,0 +1,26 @@
+/* =========================================
+   Global Styles & Theme Configuration
+   ========================================= */
+
+/* 1. PrimeNG Theme: Lara Light Blue (Stable v17 Theme) */
+/* Using specific path for v17 compatibility */
+// @import "primeng/resources/themes/lara-dark-teal/theme.css";
+
+/* 2. PrimeNG Core Styles */
+/* Essential structural CSS for components */
+@import "primeng/resources/primeng.css";
+
+/* 3. PrimeIcons */
+/* Icon library (e.g., pi-user, pi-home) */
+@import "primeicons/primeicons.css";
+
+@import "primeflex/primeflex.css";
+
+/* 4. Global Body Settings */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--surface-ground, #f8f9fa);
+    color: var(--text-color, #495057);
+}
