@@ -1,59 +1,45 @@
-# NotesAppFrontend
+# Secure Docs — Angular Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+Angular 19 SPA designed for **Arabic and English** users,
+featuring dynamic theming and centralized HTTP handling.
 
-## Development server
+---
 
-To start a local development server, run:
+## Implementation Details
 
-```bash
-ng serve
-```
+### 1. RTL/LTR Support
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Language selection dynamically switches layout direction (`dir="rtl"/"ltr"`)
+and updates Angular locales for correct date and number formatting.
+Designed to match the backend's bilingual API responses end-to-end.
 
-## Code scaffolding
+### 2. HTTP Interceptors
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Cross-cutting concerns are handled at the interceptor level:
 
-```bash
-ng generate component component-name
-```
+- **Auth Interceptor:** Attaches the Keycloak JWT token to every outgoing API request.
+- **Error Interceptor:** Catches HTTP errors globally and displays them via a centralized **Toast Message Service**, Developers don't need to write try/catch blocks in every component.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 3. Dynamic Theming
 
-```bash
-ng generate --help
-```
+Supports runtime switching between **Dark** and **Light** modes via PrimeNG,
+without page reloads.
 
-## Building
+### 4. Container Design
 
-To build the project run:
+The Docker image uses a **multi-stage build**:
 
-```bash
-ng build
-```
+1. **Node stage** — compiles Angular source to static artifacts.
+2. **Nginx stage** — serves artifacts with SPA routing (`try_files`) and Gzip compression.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Tech Stack
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Angular 19 · TypeScript · PrimeNG · Nginx · Docker
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## Deployment
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Managed via [secure-docs-deploy](https://github.com/Salamndir/secure-docs-deploy)
