@@ -24,28 +24,34 @@
     
     <ng-template pTemplate="header">
       <tr>
-        <th style="min-width: 100px">{{ 'NOTES.TABLE.FILE' | translate }}</th>
-        <th pSortableColumn="title" style="min-width: 150px">
+         <th pSortableColumn="title" style="min-width: 150px">
           {{ 'NOTES.TABLE.TITLE' | translate }} <p-sortIcon field="title"></p-sortIcon>
         </th>
+       
         <th style="min-width: 250px">{{ 'NOTES.TABLE.CONTENT' | translate }}</th>
         <th style="min-width: 120px">{{ 'NOTES.TABLE.DATE' | translate }}</th>
+
+        <th style="min-width: 100px">{{ 'NOTES.TABLE.FILE' | translate }}</th>
+
         <th style="min-width: 160px">{{ 'NOTES.TABLE.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-note>
       <tr>
+        
+
+        <td>{{ note.title }}</td>
+        
+        <td class="text-overflow-ellipsis">{{ note.content }}</td>
+        <td>{{ note.createdAt | date:'shortDate' }}</td>
+
         <td>
            <img *ngIf="isImage(note.imageUrl)" [src]="note.imageUrl" width="50" class="border-round shadow-1" style="object-fit: cover; aspect-ratio: 1/1;" />
            
            <i *ngIf="isPdf(note.imageUrl)" class="pi pi-file-pdf text-3xl text-red-500"></i>
            <i *ngIf="isOtherFile(note.imageUrl)" class="pi pi-file text-3xl text-blue-500" pTooltip="ملف مرفق" tooltipPosition="top"></i>
         </td>
-
-        <td>{{ note.title }}</td>
-        <td class="text-overflow-ellipsis">{{ note.content }}</td>
-        <td>{{ note.createdAt | date:'shortDate' }}</td>
 
         <td>
            <button pButton icon="pi pi-eye" 
@@ -63,6 +69,10 @@
                    (click)="deleteNote(note.id)">
            </button>
         </td>
+
+        
+
+
       </tr>
     </ng-template>
 
