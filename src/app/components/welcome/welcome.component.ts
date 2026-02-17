@@ -41,6 +41,6 @@ export class WelcomeComponent {
 
   goToGithub() {
     // استبدل هذا الرابط برابط مشروعك الحقيقي
-    window.open('https://github.com/Salamndir/', '_blank');
+    window.open('https://github.com/Salamndir/secure-docs-deploy', '_blank');
   }
 }
