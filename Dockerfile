@@ -1,40 +1,29 @@
 # =========================================================
-# Stage 1: Build the Angular application
-# Use Node.js image to compile TypeScript to JavaScript
-# =========================================================
-FROM node:20-alpine as build
-
-# Set the working directory inside the build container
-WORKDIR /app
-
-# Copy dependency definitions first (for better caching)
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install --legacy-peer-deps
-
-# Copy the rest of the source code
-COPY . .
-
-# Build the app for production (optimizes code)
-RUN npm run build --prod
-
-# =========================================================
-# Stage 2: Serve with Nginx (Internal Web Server)
+# Enterprise Production Runtime Stage (CI-Driven Build)
 # Use a lightweight Nginx image to serve static files
 # =========================================================
 FROM nginx:alpine
 
-# 1. Copy the built artifacts from 'Stage 1' to Nginx's HTML folder
-# CRITICAL: Ensure 'notes-app-frontend' matches the "outputPath" in angular.json
-COPY --from=build /app/dist/notes-app-frontend/browser /usr/share/nginx/html
+# ------------------------------------------------------------------
+# 1. Artifact Injection
+# ------------------------------------------------------------------
+# Copy the pre-built Angular artifacts directly from the GitHub Actions workspace.
+# CRITICAL: The path must match the "outputPath" defined in your angular.json.
+# For Angular 19+, it typically includes the '/browser' subfolder.
+COPY dist/notes-app-frontend/browser /usr/share/nginx/html
 
-# 2. Copy our custom Nginx configuration (for SPA routing & compression)
-# This overrides the default Nginx config
+# ------------------------------------------------------------------
+# 2. Server Configuration
+# ------------------------------------------------------------------
+# Copy custom Nginx configuration for Single Page Application (SPA) routing.
+# This overrides the default Nginx config to handle Angular routes correctly.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# ------------------------------------------------------------------
+# 3. Execution
+# ------------------------------------------------------------------
 # Expose port 80 (Internal container port)
 EXPOSE 80
 
-# Start Nginx in the foreground
+# Start Nginx in the foreground (daemon off is required for Docker containers)
 CMD ["nginx", "-g", "daemon off;"]
