@@ -32,6 +32,7 @@
               },
               "src/assets", 
               "src/favicon.ico",
+              "src/robots.txt",
               {
     "glob": "**/*",
     "input": "./node_modules/primeng/resources/themes",
@@ -107,7 +108,8 @@
                 "input": "public"
               },
               "src/assets", 
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/robots.txt"
             ],
             "styles": [
               "src/styles.scss"
